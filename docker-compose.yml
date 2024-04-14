@@ -1,0 +1,40 @@
+version: "3.7"
+services:
+
+  cassandra:
+    image: cassandra:3.11.13
+    container_name: cassandra
+    hostname: cassandra
+    networks:
+      - cassandra
+    ports:
+       - 9042:9042 # CQL
+    environment:
+      CASSANDRA_SEEDS: cassandra
+      CASSANDRA_USER: cassandra
+      CASSANDRA_PASSWORD: cassandra
+      CASSANDRA_PASSWORD_SEEDER: "yes"
+    restart: unless-stopped
+
+  cassandra-web:
+    build: ./
+    image: dcagatay/cassandra-web:latest
+    container_name: cassandra-web
+    depends_on:
+      - cassandra
+    networks:
+      - cassandra    
+    ports:
+      - 4000:3000
+    environment:
+      CASSANDRA_HOST_IPS: 192.168.65.1
+      CASSANDRA_PORT: 9042
+      CASSANDRA_USER: cassandra
+      CASSANDRA_PASSWORD: cassandra
+    restart: unless-stopped
+
+networks:
+  cassandra:
+    name: cassandra
+    driver: bridge
+
